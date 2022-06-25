@@ -2,18 +2,17 @@ package net.jquesada.gol
 
 import kotlin.random.Random
 
-class GameOfLifeCellGrid(rows: Int, cols: Int) {
+class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
 
-    var rowCount: Int
+    var rowCount: Int = rows
         private set
-    var colCount: Int
+    var colCount: Int = cols
         private set
 
     lateinit var cells: Array<Boolean>
+    private lateinit var neighboringCellOffsets: Sequence<Int>
 
     init {
-        rowCount = rows
-        colCount = cols
         resize(rows, cols)
     }
 
@@ -22,18 +21,19 @@ class GameOfLifeCellGrid(rows: Int, cols: Int) {
         colCount = newColCount
         val cellCount = rowCount * colCount
         cells = Array(cellCount) { Random.nextBoolean() }
+        neighboringCellOffsets = sequenceOf(1, 1 + rowCount, rowCount, -1 + rowCount, -1, -1 - rowCount, -rowCount, 1 - rowCount)
     }
 
     fun setCell(row: Int, col: Int, newValue: Boolean) {
         cells[getLinearIndex(row, col)] = newValue
     }
 
-    fun getCell(row: Int, col: Int): Boolean {
+    fun getCellAtRowAndColumn(row: Int, col: Int): Boolean {
         val idx = row * colCount + col
         return cells[getLinearIndex(row, col)]
     }
 
-    fun toggleCell(row: Int, col: Int): Boolean {
+    fun toggleCellAtRowAndColumn(row: Int, col: Int): Boolean {
         val idx = getLinearIndex(row, col)
         cells[idx] = !cells[idx]
         return cells[idx]
@@ -41,5 +41,31 @@ class GameOfLifeCellGrid(rows: Int, cols: Int) {
 
     inline fun getLinearIndex(row: Int, col: Int): Int {
         return row * colCount + col
+    }
+
+    fun countLiveNeighbors(row: Int, col: Int): Int {
+        val idx = getLinearIndex(row, col)
+        return countLiveNeighbors(idx)
+    }
+
+    fun countLiveNeighbors(idx: Int): Int {
+        return neighboringCellOffsets
+            .map { idx + it }
+            .filter { it >= 0 && it < cells.size }
+            .filter { cells[it] }
+            .count()
+    }
+
+    fun advanceGeneration() {
+        val next = cells.mapIndexed { idx, isAlive ->
+            val liveNeighbors = countLiveNeighbors(idx)
+            when {
+                isAlive && (liveNeighbors == 2 || liveNeighbors == 3) -> true
+                !isAlive && liveNeighbors == 3 -> true
+                else -> false
+            }
+        }.toTypedArray()
+
+        cells = next
     }
 }
