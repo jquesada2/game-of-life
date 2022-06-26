@@ -9,7 +9,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
     var colCount: Int = cols
         private set
 
-    lateinit var cells: Array<Boolean>
+    lateinit var cells: MutableList<Boolean>
     private lateinit var neighboringCellOffsets: Sequence<Int>
 
     init {
@@ -20,7 +20,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
         rowCount = newRowCount
         colCount = newColCount
         val cellCount = rowCount * colCount
-        cells = Array(cellCount) { Random.nextBoolean() }
+        cells = MutableList(cellCount) { Random.nextBoolean() }
         neighboringCellOffsets = sequenceOf(1, 1 + rowCount, rowCount, -1 + rowCount, -1, -1 - rowCount, -rowCount, 1 - rowCount)
     }
 
@@ -56,7 +56,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
             .count()
     }
 
-    fun advanceGeneration() {
+    fun tick() {
         val next = cells.mapIndexed { idx, isAlive ->
             val liveNeighbors = countLiveNeighbors(idx)
             when {
@@ -64,8 +64,10 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
                 !isAlive && liveNeighbors == 3 -> true
                 else -> false
             }
-        }.toTypedArray()
+        }
 
-        cells = next
+        next.forEachIndexed { idx, nextAlive ->
+            cells[idx] = nextAlive
+        }
     }
 }
