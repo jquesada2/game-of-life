@@ -70,4 +70,10 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
             cells[idx] = nextAlive
         }
     }
+
+    fun killAll() {
+        cells.forEachIndexed { idx, _ ->
+            cells[idx] = false
+        }
+    }
 }

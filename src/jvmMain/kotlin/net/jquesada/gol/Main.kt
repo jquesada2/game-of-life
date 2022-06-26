@@ -2,13 +2,19 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import net.jquesada.gol.GameOfLifeCellGrid
@@ -107,6 +113,13 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
             gridModel.refresh()
         }) {
             Text("Tick Generation")
+        }
+
+        Button(onClick = {
+            gridModel.cellGrid.killAll()
+            gridModel.refresh()
+        }) {
+            Text("Clear")
         }
     }
 }
