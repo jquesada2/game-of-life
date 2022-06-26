@@ -2,8 +2,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Button
@@ -11,77 +9,18 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import net.jquesada.gol.GameOfLifeCellGrid
 import net.jquesada.gol.GameOfLifeViewModel
 
-//object Defaults {
-//    val LiveCellButtonColor = ButtonDefaults.buttonColors(backgroundColor = Color.Green, disabledBackgroundColor = Color.Transparent)
-//    val DeadCellButtonColor = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent, disabledBackgroundColor = Color.Transparent)
-//}
-
 @Composable
 @Preview
 fun App() {
     val golGrid = GameOfLifeCellGrid(3, 5)
-
-//    LazyRow {
-//        Button(onClick = {
-//            golGrid.advanceGeneration()
-//        }) {
-//            Text("Next Generation")
-//        }
-//    }
-
-
-
-//    MaterialTheme {
-//        Button(onClick = {
-//            text = Random.nextInt(1000, 9999).toString()
-//        }) {
-//            Text(text)
-//        }
-//    }
 }
 
-//@Composable
-//fun renderCellGrid(grid: GameOfLifeCellGrid) {
-//    var cellStates = remember { mutableStateListOf(grid.cells) }
-//    LazyColumn {
-//        item {
-//            Button(onClick = {
-////                println(cellStates)
-//                grid.tick()
-////                grid.cells.forEachIndexed { idx, next -> cellStates[idx] = next }
-////                println(grid.cells)
-//            }) {
-//                Text("Tick Generation")
-//            }
-//        }
-//
-//        items(grid.rowCount) { rowIndex ->
-//            LazyRow {
-//                items(grid.colCount) { colIndex ->
-//                    val linearIndex = grid.getLinearIndex(rowIndex, colIndex)
-//                    var alive = cellStates[linearIndex]
-//                    ali
-//                    Button(onClick = {
-//                        alive = !alive
-//                        grid.cells[linearIndex] = alive
-////                        alive = grid.cells[linearIndex]
-//                    }) {
-//                        Text(if(alive) "X" else " ")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -122,10 +61,38 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
             Text("Clear")
         }
     }
+
+    Row {
+        var rowTextValue = remember { gridModel.rowCount }
+        var colTextValue = remember { gridModel.colCount }
+
+        Text("#Rows: ")
+        TextField(value = rowTextValue.value.toString(), onValueChange = {
+            if (it.isNotBlank() && it.all(Character::isDigit)) {
+                val newRowCount = it.toInt()
+                println("new row count: $newRowCount")
+                rowTextValue.value = newRowCount
+                gridModel.rowCount.value = newRowCount
+                gridModel.cellGrid.resize(newRowCount, colTextValue.value)
+                gridModel.refresh()
+            }
+        })
+
+        Text("#Cols: ")
+        TextField(value = colTextValue.value.toString(), onValueChange = {
+            if (it.isNotBlank() && it.all(Character::isDigit)) {
+                val newColCount = it.toInt()
+                println("new col count: $newColCount")
+                colTextValue.value = newColCount
+                gridModel.colCount.value = newColCount
+                gridModel.cellGrid.resize(rowTextValue.value, newColCount)
+                gridModel.refresh()
+            }
+        })
+    }
 }
 
 fun main() = application {
-
     val cellGrid = GameOfLifeCellGrid(10, 10)
     val viewModel = GameOfLifeViewModel(cellGrid)
     Window(onCloseRequest = ::exitApplication) {
