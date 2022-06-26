@@ -29,9 +29,11 @@ fun App() {
         items(golGrid.rowCount) { rowIndex ->
             LazyRow {
                 items(golGrid.colCount) { colIndex ->
-                    var alive by remember { mutableStateOf(golGrid.getCellAtRowAndColumn(rowIndex, colIndex)) }
+                    val linearIndex = golGrid.getLinearIndex(rowIndex, colIndex)
+                    var alive by remember { mutableStateOf(golGrid.cells[linearIndex]) }
                     Button(onClick = {
-                        alive = golGrid.toggleCellAtRowAndColumn(rowIndex, colIndex)
+                        golGrid.cells[linearIndex] = !golGrid.cells[linearIndex]
+                        alive = golGrid.cells[linearIndex]
                     }) {
                         Text(if(alive) "X" else " ")
                     }
