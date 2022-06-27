@@ -3,6 +3,7 @@ package net.jquesada.gol
 import androidx.compose.runtime.*
 
 data class GameOfLifeViewModel(val cellGrid: GameOfLifeCellGrid) {
+    val currentGeneration = mutableStateOf(cellGrid.generations)
     val rowCount = mutableStateOf(cellGrid.rowCount)
     val colCount = mutableStateOf(cellGrid.colCount)
     val isSimulating = mutableStateOf(cellGrid.isSimulating)

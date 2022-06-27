@@ -48,20 +48,25 @@ fun renderCellGrid(gridModel: GameOfLifeViewModel) {
 fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
 
     var simulating by remember { gridModel.isSimulating }
+    var currentGen by remember { mutableStateOf(gridModel.cellGrid.generations) }
 
-    // simple controls for tick and reset
+    // simple controls for manual tick, reset, and randomize
     Row {
         Button(
             enabled = !simulating,
             onClick = {
             gridModel.cellGrid.tick()
+            ++currentGen
             gridModel.refresh()
         }) {
             Text("Next Generation")
         }
 
-        Button(onClick = {
+        Button(
+            enabled = !simulating,
+            onClick = {
             gridModel.cellGrid.killAll()
+            currentGen = 0
             gridModel.refresh()
         }) {
             Text("Clear")
@@ -71,10 +76,13 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
             enabled = !simulating,
             onClick = {
             gridModel.cellGrid.randomize()
+            currentGen = 0
             gridModel.refresh()
         }) {
             Text("Randomize")
         }
+
+        Text("Current Generation: $currentGen")
     }
 
     // simulation controls
@@ -86,14 +94,14 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
                 gridModel.cellGrid.stopSimulation()
             } else {
                 println("is stopped: starting simulation")
-                gridModel.cellGrid.startSimulation(postTickWork = gridModel::refresh)
+                gridModel.cellGrid.startSimulation { ++currentGen; gridModel.refresh() }
             }
         }) {
             Text(if(simulating) "Stop Simulation" else "Start Simulation")
         }
     }
 
-    // grid size
+    // grid size controls
     Row {
         var rowTextValue by remember { gridModel.rowCount }
         var colTextValue by remember { gridModel.colCount }

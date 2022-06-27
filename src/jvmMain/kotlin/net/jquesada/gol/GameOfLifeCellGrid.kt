@@ -11,6 +11,8 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
         private set
     var isSimulating = false
         private set
+    var generations: Int = 0
+        private set
 
     lateinit var cells: MutableList<Boolean>
     private lateinit var neighboringCellOffsets: Sequence<Int>
@@ -50,12 +52,14 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
         next.forEachIndexed { idx, nextAlive ->
             cells[idx] = nextAlive
         }
+        ++generations
     }
 
     fun killAll() {
         cells.forEachIndexed { idx, _ ->
             cells[idx] = false
         }
+        generations = 0
     }
 
     fun startSimulation(postTickWork: () -> Unit): Boolean {
@@ -88,5 +92,6 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
         for (idx in 0 until cells.size) {
             cells[idx] = Random.nextBoolean()
         }
+        generations = 0
     }
 }
