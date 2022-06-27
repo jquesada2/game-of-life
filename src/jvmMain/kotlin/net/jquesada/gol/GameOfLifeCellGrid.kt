@@ -57,6 +57,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
     }
 
     fun tick() {
+        println("--> tick")
         val next = cells.mapIndexed { idx, isAlive ->
             val liveNeighbors = countLiveNeighbors(idx)
             when {

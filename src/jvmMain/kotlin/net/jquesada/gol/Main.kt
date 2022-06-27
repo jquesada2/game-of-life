@@ -46,8 +46,15 @@ fun renderCellGrid(gridModel: GameOfLifeViewModel) {
 
 @Composable
 fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
+
+
+
+    // simple controls for tick and reset
     Row {
-        Button(onClick = {
+        val simulating by remember { gridModel.simulationRunning }
+        Button(
+            enabled = !simulating,
+            onClick = {
             gridModel.cellGrid.tick()
             gridModel.refresh()
         }) {
@@ -55,6 +62,7 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
         }
 
         Button(onClick = {
+            gridModel.stopSimulation()
             gridModel.cellGrid.killAll()
             gridModel.refresh()
         }) {
@@ -62,6 +70,25 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
         }
     }
 
+    // simulation controls
+    Row {
+        val simulating by remember { gridModel.simulationRunning }
+
+        Button(onClick = {
+            println("simulate button clicked")
+            if (simulating) {
+                println("is simulating: stopping")
+                gridModel.stopSimulation()
+            } else {
+                println("is stopped: starting simulation")
+                gridModel.startSimulation()
+            }
+        }) {
+            Text(if(simulating) "Stop Simulation" else "Start Simulation")
+        }
+    }
+
+    // grid size
     Row {
         var rowTextValue = remember { gridModel.rowCount }
         var colTextValue = remember { gridModel.colCount }
