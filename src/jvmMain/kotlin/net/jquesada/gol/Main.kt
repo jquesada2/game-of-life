@@ -47,7 +47,7 @@ fun renderCellGrid(gridModel: GameOfLifeViewModel) {
 @Composable
 fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
 
-    val simulating by remember { gridModel.simulationRunning }
+    var simulating by remember { gridModel.isSimulating }
 
     // simple controls for tick and reset
     Row {
@@ -61,7 +61,6 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
         }
 
         Button(onClick = {
-            gridModel.stopSimulation()
             gridModel.cellGrid.killAll()
             gridModel.refresh()
         }) {
@@ -73,12 +72,12 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
     Row {
         Button(onClick = {
             println("simulate button clicked")
-            if (simulating) {
+            simulating = if (simulating) {
                 println("is simulating: stopping")
-                gridModel.stopSimulation()
+                gridModel.cellGrid.stopSimulation()
             } else {
                 println("is stopped: starting simulation")
-                gridModel.startSimulation()
+                gridModel.cellGrid.startSimulation(postTickWork = gridModel::refresh)
             }
         }) {
             Text(if(simulating) "Stop Simulation" else "Start Simulation")
@@ -87,29 +86,29 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
 
     // grid size
     Row {
-        var rowTextValue = remember { gridModel.rowCount }
-        var colTextValue = remember { gridModel.colCount }
+        var rowTextValue by remember { gridModel.rowCount }
+        var colTextValue by remember { gridModel.colCount }
 
         Text("#Rows: ")
-        TextField(value = rowTextValue.value.toString(), onValueChange = {
+        TextField(value = rowTextValue.toString(), enabled = !simulating, onValueChange = {
             if (it.isNotBlank() && it.all(Character::isDigit)) {
                 val newRowCount = it.toInt()
                 println("new row count: $newRowCount")
-                rowTextValue.value = newRowCount
+                rowTextValue = newRowCount
                 gridModel.rowCount.value = newRowCount
-                gridModel.cellGrid.resize(newRowCount, colTextValue.value)
+                gridModel.cellGrid.resize(newRowCount, colTextValue)
                 gridModel.refresh()
             }
         })
 
         Text("#Cols: ")
-        TextField(value = colTextValue.value.toString(), onValueChange = {
+        TextField(value = colTextValue.toString(), enabled = !simulating, onValueChange = {
             if (it.isNotBlank() && it.all(Character::isDigit)) {
                 val newColCount = it.toInt()
                 println("new col count: $newColCount")
-                colTextValue.value = newColCount
+                colTextValue = newColCount
                 gridModel.colCount.value = newColCount
-                gridModel.cellGrid.resize(rowTextValue.value, newColCount)
+                gridModel.cellGrid.resize(rowTextValue, newColCount)
                 gridModel.refresh()
             }
         })
