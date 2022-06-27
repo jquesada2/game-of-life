@@ -34,8 +34,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
 
     fun countLiveNeighbors(idx: Int): Int {
         return neighboringCellOffsets
-            .map { idx + it }
-            .filter { it >= 0 && it < cells.size }
+            .map { (idx + it + cells.size) % cells.size }
             .filter { cells[it] }
             .count()
     }
