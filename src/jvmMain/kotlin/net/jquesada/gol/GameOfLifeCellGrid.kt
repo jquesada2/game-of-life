@@ -18,6 +18,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
     private lateinit var neighboringCellOffsets: Sequence<Int>
 
     var simulationTask: Job? = null
+    var simulationSpeed: Long = 200L
 
     init {
         resize(rows, cols)
@@ -71,7 +72,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
             while (isSimulating) {
                 tick()
                 postTickWork()
-                delay(500L)
+                delay(simulationSpeed)
             }
         }
 

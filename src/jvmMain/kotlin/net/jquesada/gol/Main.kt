@@ -1,19 +1,29 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import net.jquesada.gol.GameOfLifeCellGrid
 import net.jquesada.gol.GameOfLifeViewModel
+
+object Data {
+    val SimSpeeds = linkedMapOf(
+        "Model T" to 2000L,
+        "Pinto" to 1000L,
+        "Focus" to 500L,
+        "Ride the Lightning" to 200L,
+        "Once this thing hits 88 mph..." to 10L
+    )
+}
 
 @Composable
 @Preview
@@ -88,16 +98,40 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
     // simulation controls
     Row {
         Button(onClick = {
-            println("simulate button clicked")
+//            println("simulate button clicked")
             simulating = if (simulating) {
-                println("is simulating: stopping")
+//                println("is simulating: stopping")
                 gridModel.cellGrid.stopSimulation()
             } else {
-                println("is stopped: starting simulation")
+//                println("is stopped: starting simulation")
                 gridModel.cellGrid.startSimulation { ++currentGen; gridModel.refresh() }
             }
         }) {
             Text(if(simulating) "Stop Simulation" else "Start Simulation")
+        }
+
+        Text("Simulation Speed: ")
+
+        var expanded by remember { mutableStateOf(false) }
+        var selectedSimSpeedKey by remember { mutableStateOf("Ride The Lightning") }
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart).background(Color.Transparent)) {
+            Text(selectedSimSpeedKey, modifier = Modifier.fillMaxWidth().clickable(onClick = { expanded = true }).background(
+                Color.LightGray))
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth().background(Color.White)
+            ) {
+                Data.SimSpeeds.entries.forEachIndexed { index, simspeed ->
+                    DropdownMenuItem(onClick = {
+                        selectedSimSpeedKey = simspeed.key
+                        gridModel.cellGrid.simulationSpeed = simspeed.value
+                        expanded = false
+                    }) {
+                        Text(text = simspeed.key)
+                    }
+                }
+            }
         }
     }
 
