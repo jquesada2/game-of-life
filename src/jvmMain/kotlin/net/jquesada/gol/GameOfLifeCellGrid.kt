@@ -83,4 +83,10 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
 
         return isSimulating
     }
+
+    fun randomize() {
+        for (idx in 0 until cells.size) {
+            cells[idx] = Random.nextBoolean()
+        }
+    }
 }

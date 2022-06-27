@@ -57,7 +57,7 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
             gridModel.cellGrid.tick()
             gridModel.refresh()
         }) {
-            Text("Tick Generation")
+            Text("Next Generation")
         }
 
         Button(onClick = {
@@ -65,6 +65,15 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
             gridModel.refresh()
         }) {
             Text("Clear")
+        }
+
+        Button(
+            enabled = !simulating,
+            onClick = {
+            gridModel.cellGrid.randomize()
+            gridModel.refresh()
+        }) {
+            Text("Randomize")
         }
     }
 
