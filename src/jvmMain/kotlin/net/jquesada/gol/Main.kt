@@ -47,11 +47,10 @@ fun renderCellGrid(gridModel: GameOfLifeViewModel) {
 @Composable
 fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
 
-
+    val simulating by remember { gridModel.simulationRunning }
 
     // simple controls for tick and reset
     Row {
-        val simulating by remember { gridModel.simulationRunning }
         Button(
             enabled = !simulating,
             onClick = {
@@ -72,8 +71,6 @@ fun renderCellGridControls(gridModel: GameOfLifeViewModel) {
 
     // simulation controls
     Row {
-        val simulating by remember { gridModel.simulationRunning }
-
         Button(onClick = {
             println("simulate button clicked")
             if (simulating) {
