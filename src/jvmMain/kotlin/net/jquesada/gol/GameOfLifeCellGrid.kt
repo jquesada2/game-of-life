@@ -29,7 +29,7 @@ class GameOfLifeCellGrid(rows: Int = 10, cols: Int = 10) {
         colCount = newColCount
         val cellCount = rowCount * colCount
         cells = MutableList(cellCount) { Random.nextBoolean() }
-        neighboringCellOffsets = sequenceOf(1, 1 + rowCount, rowCount, -1 + rowCount, -1, -1 - rowCount, -rowCount, 1 - rowCount)
+        neighboringCellOffsets = sequenceOf(1, 1 + colCount, colCount, -1 + colCount, -1, -1 - colCount, -colCount, 1 - colCount)
     }
 
     fun countLiveNeighbors(idx: Int): Int {
